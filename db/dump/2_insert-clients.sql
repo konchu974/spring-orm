@@ -1,5 +1,5 @@
 -- Génération des 100 utilisateurs
-INSERT INTO public."user" (first_name, last_name, birthdate, id, email)
+INSERT INTO public."client" (first_name, last_name, birthdate, id, email)
 SELECT first_name, last_name, to_date(birthdate, 'YYYY-MM-DD'), gen_random_uuid(), email FROM (
     VALUES
         ('John', 'Smith', '1990-05-15', 'john.smith@example.com'),
@@ -57,5 +57,5 @@ SELECT first_name, last_name, to_date(birthdate, 'YYYY-MM-DD'), gen_random_uuid(
         ('Tariq', 'Choudhury', '1994-04-01', 'tariq.choudhury@example.com'),
         ('Catarina', 'Santos', '1976-10-20', 'catarina.santos@example.com'),
         ('Jin', 'Kim', '1990-11-10', 'jin.kim@example.com')
-) AS users (first_name, last_name, birthdate, email);
+) AS clients (first_name, last_name, birthdate, email);
 
