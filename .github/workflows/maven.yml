@@ -10,9 +10,11 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "integration-tests-examples" ]
+    branches:
+      - integration-tests-examples
   pull_request:
-    branches: [ "integration-tests-examples" ]
+    branches:
+      - integration-tests-examples
 
 jobs:
   build:
