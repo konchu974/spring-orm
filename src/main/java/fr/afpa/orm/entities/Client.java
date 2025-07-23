@@ -51,8 +51,7 @@ public class Client {
     /**
      * Association de type "OneToMany" : une personne peut avoir plusieurs comptes
      */
-    @JsonIgnore
-    @OneToMany(targetEntity = Account.class, mappedBy = "owner")
+    @OneToMany(targetEntity = Account.class, mappedBy = "client")
     private List<Account> accounts;
 
     public Client() {
