@@ -2,6 +2,7 @@ package fr.afpa.orm.dto;
 
 import fr.afpa.orm.entities.Account;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,5 +11,7 @@ public record ClientDto(
         String firstName,
         String lastName,
         String email,
-        List<Account> accounts
+        LocalDate birthdate,
+        List<AccountDto> accounts,
+        List<InsuranceDto> insurances
 ) { }

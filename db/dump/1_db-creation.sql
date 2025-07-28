@@ -22,3 +22,18 @@ CREATE TABLE account (
     FOREIGN KEY(client_id) REFERENCES client(id)
 );
 
+CREATE TABLE insurance(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(150)
+);
+
+
+CREATE TABLE souscri(
+    id_client uuid,
+    id_insurance INTEGER,
+    PRIMARY KEY(id_client, id_insurance),
+    FOREIGN KEY(id_client) REFERENCES client(id),
+    FOREIGN KEY(id_insurance) REFERENCES insurance(id)
+);
+
+

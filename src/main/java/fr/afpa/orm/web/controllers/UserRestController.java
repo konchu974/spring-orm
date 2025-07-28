@@ -1,5 +1,8 @@
 package fr.afpa.orm.web.controllers;
 
+import fr.afpa.orm.dto.AccountDto;
+import fr.afpa.orm.dto.ClientDto;
+import fr.afpa.orm.dto.ClientDtoMapper;
 import fr.afpa.orm.entities.Account;
 import fr.afpa.orm.entities.Client;
 import fr.afpa.orm.repositories.AccountRepository;
@@ -10,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,41 +21,47 @@ import java.util.List;
 public class UserRestController {
     @Autowired
     private ClientRepository clientRepository;
+    private ClientDtoMapper clientDtoMapper;
 
-    public UserRestController(ClientRepository clientRepository) {
+    public UserRestController(ClientRepository clientRepository, ClientDtoMapper clientDtoMapper) {
         this.clientRepository = clientRepository;
+        this.clientDtoMapper = clientDtoMapper;
     }
 
     @GetMapping()
-    public List<Client> getAll() {
-        List<Client> all = (List<Client>) clientRepository.findAll();
-
-        return all;
+    public List<ClientDto> getAll() {
+        List<ClientDto> result = new ArrayList<>();
+        clientRepository.findAll().forEach(client -> result.add(clientDtoMapper.apply(client)));
+        return result;
     }
 
+
     @GetMapping("/{id}")
-    public ResponseEntity<Client> getOne(@PathVariable long id) {
+    public ResponseEntity<ClientDto> getOne(@PathVariable long id) {
         // TODO compléter le code
 
-        return ResponseEntity.ok(clientRepository.findById(id).orElseThrow());
+        Client client = clientRepository.findById(id).orElseThrow();
+        return ResponseEntity.ok(clientDtoMapper.apply(client));
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Client create(@RequestBody Client client) {
-        Client createClient = clientRepository.save(client);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createClient).getBody();
+    public ClientDto create(@RequestBody ClientDto clientDto) {
+        Client client = clientDtoMapper.toEntity(clientDto);
+        Client saved = clientRepository.save(client);
+        return clientDtoMapper.apply(saved);
     }
 
     @PostMapping("/{id}")
-    public void update(@PathVariable long id, @RequestBody Client client) {
+    public void update(@PathVariable long id, @RequestBody ClientDto clientDto) {
         // TODO Compléter le code
         Client updatedClient = clientRepository.findById(id).orElseThrow();
-        updatedClient.setFirstName(client.getFirstName());
-        updatedClient.setLastName(client.getLastName());
-        updatedClient.setEmail(client.getEmail());
-        updatedClient.setBirthdate(client.getBirthdate());
+        updatedClient.setFirstName(clientDto.firstName());
+        updatedClient.setLastName(clientDto.lastName());
+        updatedClient.setEmail(clientDto.email());
+        updatedClient.setBirthdate(clientDto.birthdate());
         clientRepository.save(updatedClient);
+
     }
 
     @DeleteMapping("/{id}")

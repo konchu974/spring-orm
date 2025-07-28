@@ -1,20 +1,16 @@
 package fr.afpa.orm.web.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.afpa.orm.dto.AccountDto;
 import fr.afpa.orm.dto.AccountDtoMapper;
+import fr.afpa.orm.dto.ClientDto;
+import fr.afpa.orm.entities.Client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import fr.afpa.orm.entities.Account;
 import fr.afpa.orm.repositories.AccountRepository;
@@ -38,10 +34,12 @@ public class AccountRestController {
 
     @Autowired
     private AccountRepository accountRepository;
+
     private AccountDtoMapper accountDtoMapper ;
 
-    public AccountRestController(AccountRepository accountRepository) {
+    public AccountRestController(AccountRepository accountRepository, AccountDtoMapper accountDtoMapper) {
         this.accountRepository = accountRepository;
+        this.accountDtoMapper = accountDtoMapper;
     }
 
     /**
@@ -50,12 +48,10 @@ public class AccountRestController {
      * Attention, il manque peut être une annotation :)
      */
     @GetMapping()
-    public List<Account> getAll() {
-        // TODO récupération des compte provenant d'un repository
-        List<Account> all = (List<Account>) accountRepository.findAll();
-
-        // TODO renvoyer les objets de la classe "Account"
-        return all;
+    public List<AccountDto> getAll() {
+        List<AccountDto> result = new ArrayList<>();
+        accountRepository.findAll().forEach(account -> result.add(accountDtoMapper.apply(account)));
+        return result;
     }
 
     /**
@@ -64,10 +60,9 @@ public class AccountRestController {
      */
 
     @GetMapping("/{id}")
-    public ResponseEntity<Account> getOne(@PathVariable long id) {
-        // TODO compléter le code
-
-        return ResponseEntity.ok(accountRepository.findById(id).orElseThrow());
+    public ResponseEntity<AccountDto> getOne(@PathVariable long id) {
+        Account account = accountRepository.findById(id).orElseThrow();
+        return ResponseEntity.ok(accountDtoMapper.apply(account));
     }
 
     /**
@@ -78,8 +73,9 @@ public class AccountRestController {
      **/
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Account create(@RequestBody Account account) {
+    public Account create(@RequestBody AccountDto accountDto) {
         // TODO compléter le code
+        Account account = accountDtoMapper.toEntity(accountDto);
         Account createAccount = accountRepository.save(account);
         return ResponseEntity.status(HttpStatus.CREATED).body(createAccount).getBody();
     }
@@ -89,15 +85,21 @@ public class AccountRestController {
      * 
      * Attention de bien ajouter les annotations qui conviennent
      */
-    @PostMapping("/{id}")
-    public void update(@PathVariable long id, @RequestBody Account account) {
-        // TODO Compléter le code
-        Account updatedAccount = accountRepository.findById(id).orElseThrow();
-        updatedAccount.setClient(account.getClient());
-        updatedAccount.setBalance(account.getBalance());
-        accountRepository.save(updatedAccount);
+    @PutMapping("/{id}")
+    public ResponseEntity<AccountDto> update(@PathVariable long id, @RequestBody AccountDto accountDto) {
+        Account existingAccount = accountRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Account not found with id " + id));
 
+        Account updatedAccount = accountDtoMapper.toEntity(accountDto);
+
+        updatedAccount.setId(existingAccount.getId());
+        updatedAccount.setId(existingAccount.getId());
+
+        Account saved = accountRepository.save(existingAccount);
+
+        return ResponseEntity.ok(accountDtoMapper.apply(saved));
     }
+
 
     /**
      * TODO implémenter une méthode qui traite les requêtes  DELETE 
@@ -108,10 +110,10 @@ public class AccountRestController {
      */
 
     @DeleteMapping("/{id}")
-    public void remove(@PathVariable long id, HttpServletResponse response) {
-        // TODO implémentation
+    public void remove(@PathVariable long id) {
+        Account accountToDelete = accountRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Account not found with id " + id));
 
-        Account accountDelete = accountRepository.findById(id).orElseThrow();
-        accountRepository.delete(accountDelete);
+        accountRepository.delete(accountToDelete);
     }
 }

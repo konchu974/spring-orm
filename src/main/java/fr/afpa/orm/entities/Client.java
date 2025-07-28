@@ -1,19 +1,14 @@
 package fr.afpa.orm.entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="client")
@@ -53,6 +48,13 @@ public class Client {
      */
     @OneToMany(targetEntity = Account.class, mappedBy = "client")
     private List<Account> accounts;
+
+    @ManyToMany
+    @JoinTable(name = "souscri",
+            joinColumns = @JoinColumn( name = "id_client" ),
+            inverseJoinColumns = @JoinColumn( name = "id_insurance" ) )
+    private List<Insurance> insurances = new ArrayList<>();
+
 
     public Client() {
         // Constructeur vide.
@@ -104,5 +106,13 @@ public class Client {
 
     public void setAccounts(List<Account> accounts) {
         this.accounts = accounts;
+    }
+
+    public List<Insurance> getInsurances() {
+        return insurances;
+    }
+
+    public void setInsurances(List<Insurance> insurances) {
+        this.insurances = insurances;
     }
 }
