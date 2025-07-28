@@ -28,6 +28,11 @@ public class InsuranceRestController {
     @GetMapping()
     public List<InsuranceDto> getAll() {
         List<InsuranceDto> result = new ArrayList<>();
+
+        // TODO suite du TODO indiqué dans "InsuranceRepository"
+        // si le repository est un CRUDRespository alors il devient possible de faire :
+        // insuranceRepository.findAll().stream().map(mapper).collect();
+        // à tester !
         insuranceRepository.findAll().forEach(insurance -> result.add(insuranceDtoMapper.apply(insurance)));
         return result;
     }
