@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
  * 
  * Documentation -> https://medium.com/@boris.alexandre.rose/springbootapplication-ab08032a7049
  * 
+ * TODO : est-ce que l'application est fonctionnelle sans l'annotation "EntityScan" ? A tester.
  */
 @EntityScan
 @SpringBootApplication
